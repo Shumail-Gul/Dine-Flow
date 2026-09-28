@@ -1,30 +1,33 @@
+// Server/models/Order.js
+
 import mongoose from "mongoose";
 
-export const orderItemSchema = new mongoose.Schema({
-    menuItemId: { 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: 'MenuItem' 
-    },
-    name: { type: String, required: true },          // Snapshot of item name
-    unitPrice: { type: Number, required: true },     // Snapshot of base price at purchase
-    quantity: { type: Number, required: true },
-    selectedModifiers: [{
-      modifierName: String,                          // e.g., "Size"
-      optionLabel: String,                           // e.g., "Large"
-      priceDelta: Number                             // e.g., 2.50
-    }]
-  });
-  
-  const orderSchema = new mongoose.Schema({
+const orderItemSchema = new mongoose.Schema({
+ 
+  menuItemId: { type: mongoose.Schema.Types.ObjectId, ref: "MenuItem", required: true },
+  name: { type: String, required: true },
+  unitPrice: { type: Number, required: true },
+  quantity: { type: Number, required: true },
+  selectedModifiers: [String],
+});
+
+const orderSchema = new mongoose.Schema(
+  { adminId : {
+    type: mongoose.Schema.Types.ObjectId,
+    ref : "User",
+    required: true,
+    index : true
+  },
     tableNumber: { type: Number, required: true },
-    items: [orderItemSchema],                       
-    totalAmount: { type: Number, required: true },  
-    status: { 
-      type: String, 
-      enum: ['pending', 'preparing', 'served', 'cancelled'], 
-      default: 'pending' 
-    }
-  }, { timestamps: true });                          // Provides automatic `createdAt`
+    items: [orderItemSchema],
+    totalAmount: { type: Number, required: true },
+    status: {
+      type: String,
+      enum: ["pending", "preparing", "ready", "served", "cancelled"],
+      default: "pending",
+    },
+  },
+  { timestamps: true }
+);
 
-
-  export default ("Order", orderSchema)
+export default mongoose.model("Order", orderSchema);
